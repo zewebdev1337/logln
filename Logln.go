@@ -62,6 +62,16 @@ func levelStr(level int) string {
 	}
 }
 
+// PrintWarningOrSuccessIfNotOk logs an error message if the 'ok' parameter is false,
+// otherwise logs a success message.
+func PrintWarningOrSuccessIfNotOk(ok bool, msg string, successLevel int, isSuccessSilent bool) {
+	if !ok {
+		warnIfNotOk(ok, msg)
+	} else {
+		printSuccess(msg, successLevel, isSuccessSilent)
+	}
+}
+
 // PrintErrorOrSuccessIfNotOk logs an error message if the 'ok' parameter is false,
 // otherwise logs a success message.
 func PrintErrorOrSuccessIfNotOk(ok bool, msg string, successLevel int, isSuccessSilent bool) {
@@ -87,6 +97,16 @@ func PrintFatalOrSuccessIfNotOk(ok bool, msg string, successLevel int, isSuccess
 func PrintPanicOrSuccessIfNotOk(ok bool, msg string, successLevel int, isSuccessSilent bool) {
 	if !ok {
 		panicIfNotFalse(ok, msg)
+	} else {
+		printSuccess(msg, successLevel, isSuccessSilent)
+	}
+}
+
+// PrintWarningOrSuccess logs a warning message if the 'err' parameter is not nil,
+// otherwise logs a success message.
+func PrintWarningOrSuccess(msg string, err error, successLevel int, isSuccessSilent bool) {
+	if err != nil {
+		warningWithError(msg, err)
 	} else {
 		printSuccess(msg, successLevel, isSuccessSilent)
 	}
@@ -127,6 +147,11 @@ func errorIfNotOk(ok bool, msg string) {
 	errorIfNotFalse(ok, msg)
 }
 
+// warnIfNotOk logs a warning message if the 'ok' parameter is false.
+func warnIfNotOk(ok bool, msg string) {
+	warnIfNotFalse(ok, msg)
+}
+
 // fatalIfNotOk logs a fatal error message if the 'ok' parameter is false.
 // The program will exit with status code 1.
 func fatalIfNotOk(ok bool, msg string) {
@@ -134,9 +159,19 @@ func fatalIfNotOk(ok bool, msg string) {
 }
 
 // panicIfNotOk logs a panic message if the 'ok' parameter is false.
-// The program will crash.
+// The program will then panic
 func panicIfNotOk(ok bool, msg string) {
 	panicIfNotFalse(ok, msg)
+}
+
+// warningWithError logs a warning message with the given message and error.
+func warningWithError(msg string, err error) {
+	Logln(fmt.Sprintf("%s: %s", msg, err.Error()), 1, false)
+}
+
+// warning logs a simple warning message with the given message.
+func warning(msg string, err error) {
+	Logln(fmt.Sprintf("%s: %s", msg, err.Error()), 1, false)
 }
 
 // printError logs an error message with the given message and error.
@@ -162,6 +197,14 @@ func errorIfNotFalse(b bool, msg string) {
 	switch b {
 	case false:
 		Logln(fmt.Sprintf("Error occurred %s: %t", msg, b), 2, false)
+	}
+}
+
+// warnIfNotFalse logs a warning message if the 'b' parameter is false.
+func warnIfNotFalse(b bool, msg string) {
+	switch b {
+	case false:
+		Logln(fmt.Sprintf("%s: %t", msg, b), 1, false)
 	}
 }
 
