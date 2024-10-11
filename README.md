@@ -162,4 +162,3 @@ Logs a panic message if `err` is not nil and panics, otherwise logs a success me
 ## License
 
 This package is licensed under the MIT License.
-```
