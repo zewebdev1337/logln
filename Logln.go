@@ -55,6 +55,8 @@ func levelStr(level int) string {
 		return "ERROR" // If the level is 2, return "ERROR"
 	case 3:
 		return "FATAL" // If the level is 3, return "FATAL"
+	case 4:
+		return "PANIC" // If the level is 3, return "PANIC"
 	case 5:
 		return "DEBUG" // If the level is 5, return "DEBUG"
 	default:
@@ -189,7 +191,7 @@ func fatalError(msg string, err error) {
 // panicError logs a panic message with the given message and error.
 // The program will crash.
 func panicError(msg string, err error) {
-	Logln(fmt.Sprintf("Panic %s: %s", msg, err.Error()), 3, false)
+	Logln(fmt.Sprintf("Panic %s: %s", msg, err.Error()), 4, false)
 }
 
 // errorIfNotFalse logs an error message if the 'b' parameter is false.
@@ -222,7 +224,7 @@ func fatalIfNotFalse(b bool, msg string) {
 func panicIfNotFalse(b bool, msg string) {
 	switch b {
 	case false:
-		Logln(fmt.Sprintf("Panic %s: %t", msg, b), 3, false)
+		Logln(fmt.Sprintf("Panic %s: %t", msg, b), 4, false)
 	}
 }
 
@@ -231,8 +233,20 @@ func printSuccess(msg string, successLevel int, isSilent bool) {
 	Logln(fmt.Sprintf("Success %s.", msg), successLevel, isSilent)
 }
 
-// ManualLogf writes the given text to the console and appends it to the log file with the current date and time. It doesn't append a newline to the provided string.
+// ManualLogf writes the given text to the console and appends it to the log file. It doesn't append a newline to the provided string.
 func ManualLogf(text string, level int, isSilent bool) error {
+	if !isSilent {
+		fmt.Print(text)
+	}
+	if logFile != nil {
+		_, err := logFile.WriteString(text)
+		return err
+	}
+	return nil
+}
+
+// StartManualLogf writes the given text to the console and appends it to the log file with the current date and time. It doesn't append a newline to the provided string.
+func StartManualLogf(text string, level int, isSilent bool) error {
 	levelStr := levelStr(level)
 
 	date := getDateStringLogFmt()
