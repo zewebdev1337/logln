@@ -2,23 +2,27 @@ package logln
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 )
 
-// fileName is the name of the log file. It is initialized with the current date and time in the format YYYY_MM_DD-HH_mm_SS.log
-var fileName = getDateStringFileFmt() + ".log"
+// defaultLogFileName  is initialized with the current date and time in the format YYYY_MM_DD-HH_mm_SS.log
+var defaultLogFileName = fmt.Sprintf("%s.log", getDateStringFileFmt())
 
 // logFile is a pointer to the log file. It is initialized to nil and is set to the opened log file in the Init function.
 var logFile *os.File
 
-// Init initializes the log file by opening it with the name fileName. If the file does not exist, it is created.
-// If there is an error opening the file, an error message is printed to the console and the program exits with status code 1.
+// Init initializes the log file by creating and opening defaultLogFileName
 func Init() {
-	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	CustomInit(defaultLogFileName)
+}
+
+// CustomInit initializes the log file by opening the file at provided path. If the file does not exist, it is created.
+func CustomInit(filePath string) {
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Println("Error opening log file:", err)
-		os.Exit(1)
+		log.Fatal("Error opening log file:", err)
 	}
 	logFile = file
 }
@@ -56,7 +60,7 @@ func levelStr(level int) string {
 	case 3:
 		return "FATAL" // If the level is 3, return "FATAL"
 	case 4:
-		return "PANIC" // If the level is 3, return "PANIC"
+		return "PANIC" // If the level is 4, return "PANIC"
 	case 5:
 		return "DEBUG" // If the level is 5, return "DEBUG"
 	default:
